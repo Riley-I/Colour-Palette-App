@@ -1,0 +1,192 @@
+<html>
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content="Colour Palette App">
+        <meta name="keywords" content="design, graphic design, app, colours, colors, colour palette">
+        <link rel="stylesheet" href="styles.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>My Colour Palette</title>
+    </head>
+
+
+<body>
+    <div id=wrapper>
+
+            <header>
+                <h1 id="title">My Colour Palette</h1>
+             
+            </header>
+
+                <h3>Add Colours</h3>
+            <main>
+                <div id="color-picker" class="inputBlock">
+                    <p>Use Colour-picker<input id="colourHexCode" type="color" value=""></p>
+                            <button class="primaryButton" onclick="postColour()">Add</button>
+                           <button class="primaryButton" onclick="clearColour();removeFromArray();">Clear</button> 
+                </div><!--colour picker close div-->
+                
+                <div id="hex-input" class="inputBlock">
+                    <p>Or, Type Hex Code<input id="colourHexCodeText" type="text" value=""></p>
+                            <button class="primaryButton" onclick="postColourFromText()">Add</button>
+                            <button class="primaryButton" onclick="clearColour();removeFromArray()">Clear</button>
+                </div><!--hex input close div-->
+            </main>        
+            
+         
+
+            <div id="palette">
+                <h2>Project Name</h2><input id="projectName" type="text" value="">
+                <ul id="myList"></ul>
+                <button class="secondaryButton" onclick="generateObject()">Save Palette</button>
+                <button class="secondaryButton" onclick="clearPalette()">Clear Palette</button>
+
+            </div>
+
+            <h3 id="pastProjH3">Past Projects</h3>
+            <p id="pastProjectsLocation"></p>
+             
+            <button class="tertiaryButton" onclick="retrieveAllStorage()">Open Saved Palettes</button>
+            <!-------need to update to retrieve objects from local storage not arrays-->
+
+           <button class="tertiaryButton" onclick="removeAllFromStorage();clearPalette()">Clear All Palettes</button>
+           <!-------need to update to remove object from local storage not array-->
+   
+    </div><!---wrapper close div-->
+
+
+    <script>
+
+        //array to store colour input data
+        var myArray = []
+
+        //empty object to push myArray and proj name and color palette array into 
+        let myProject = {};
+
+        //archives array of objects
+        var archive = [] 
+
+
+//add colour element to document from Colour picker
+        function postColour(){
+                let colourHexCode = document.getElementById('colourHexCode').value //get value from input tag
+                let colour = document.createElement("p") //create new p tag in document to hold input 
+                colour.classList.add("class"); //add class to new p elements
+
+                //inline dynamic style. concantinate style as a string + dynamic value (input hex code)
+                colour.style = "background-color:" + colourHexCode;
+
+                colour.innerText = colourHexCode; // adding content to that element 
+                var element = document.getElementById("myList");
+                element.appendChild(colour); //append to html doc
+
+                myArray.push(colourHexCode); //add colour item to array
+
+                console.log(colourHexCode + " has been added!")
+            }
+
+//add colour to document from text input
+            function postColourFromText(){
+                let colourHexCodeText = document.getElementById('colourHexCodeText').value //get value from input tag
+                let colourText = document.createElement("p") //create new p tag in document to hold input 
+                colourText.classList.add("class"); //add class to new p elements
+
+                //inline dynamic style. concantinate style as a string + dynamic value (input hex code)
+                colourText.style = "background-color:" + colourHexCodeText;
+
+                colourText.innerText = colourHexCodeText; // adding content to that element 
+                var element = document.getElementById("myList");
+                element.appendChild(colourText); //append to html doc
+
+                myArray.push(colourHexCodeText); //add colour item to array
+
+                console.log(colourHexCodeText + " has been added!")
+            }
+
+//remove single colour elements from document
+            function clearColour(){
+                //remove p.class elements from document
+                var colourElement = document.getElementsByClassName("class")[i];
+                colourElement.remove();
+                console.log("A colour has been removed")
+            }
+                for(var i=0; i < myArray.length; i++){
+                document.body.removeChild('p')[0];
+            }
+
+//remove items from array on click of "clear" html button
+            function removeFromArray(){
+                myArray.pop()
+                console.log('one item has been removed from array')
+                }
+    
+//clear array from object and elements from document
+            function clearPalette(){
+               myArray.splice(0, myArray.length); //remove all items from array
+
+               var colourElement = document.getElementById("myList");
+               colourElement.innerHTML = "";
+
+               //clear past projects elements id = p#pastProjectsLocation
+               document.getElementById('pastProjectsLocation').innerText = "";
+            }
+         
+
+//store object data : stringify and setitem
+        function storeData(object){
+            let data = JSON.stringify(object)
+                localStorage.setItem("myProject" + i++, data)
+                
+                console.log(object)
+        }
+
+//generate object based off of input
+        function generateObject(){
+                var input1 = document.getElementById("projectName").value; //set variables for inputs
+                let input2 = myArray
+                
+                var projobj = new Object() //create new object
+
+                projobj.name = input1
+                projobj.color = input2
+
+                //call to storedata function to automatically store new object data 
+                storeData(projobj)
+            }
+
+//retrieve storage data and write relevant info to doc
+        function retrieveAllStorage() {
+                for (var i = 0; i<localStorage.length; i++) {  //loop through length of local storage
+                    archive[i] = localStorage.getItem(localStorage.key(i)); //set archive items to equal local storage object keys
+                    JSON.parse(archive[i]);
+                    console.log(archive[i])
+                }
+
+                for (var i = 0; i<archive.length; i++) {  //loop through length of local storage
+                var parseObjects = JSON.parse(archive[i]); //set archive items to equal local storage object keys
+                
+                console.log(parseObjects);
+
+                //write past project objects to doc
+                    var pastProjP = document.createElement("p")
+                    var objName = parseObjects.name 
+                    var objColArr = parseObjects.color
+                    var objNamePlusCol = parseObjects.name + " : " + parseObjects.color;
+                    pastProjP.innerText = objNamePlusCol
+                    var location = document.getElementById("pastProjectsLocation");
+                    location.appendChild(pastProjP);
+                }
+            }
+        
+        //clear local storage and reset archive array to empty
+        function removeAllFromStorage(){
+                    localStorage.clear() 
+                    var archive = [];
+                    }
+
+
+    </script>
+
+    </body>
+    </html>
